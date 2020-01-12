@@ -92,11 +92,3 @@ file_name = "Ford_how_to_video.csv"
 # write_csv(results, file_name)
 excute_each_request(results, file_name)
 print('------------------------------The End----------------------------------')
-
-
-# URL = "https://owner.ford.com/support/how-tos/electric-ev-hybrids/how-to-extend-your-electric-vehicle-range.html"
-# from bs4 import BeautifulSoup
-# response = requests.get(url=URL).text
-# soup = BeautifulSoup(response, 'html.parser')
-# video_icon = soup.find('video')
-# print(video_icon)
