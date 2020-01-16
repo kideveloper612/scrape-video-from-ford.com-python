@@ -7,14 +7,15 @@ def video_from_file(path, filename, results):
         """
         import os
         import csv
-        if not os.path.isdir('output'):
-            os.mkdir("output")
-        file_path = "output/%s" % filename
+        if not os.path.isdir('download'):
+            os.mkdir("download")
+        file_path = "download/%s" % filename
         with open(file_path, 'a', encoding='utf-8', newline='') as writeFile:
             writer = csv.writer(writeFile, delimiter=',')
             writer.writerows(lines)
 
     def dom_parser(URL):
+        print("=================================================================================================================================================")
         import requests
         res = requests.get(url=URL).text
 
@@ -29,36 +30,32 @@ def video_from_file(path, filename, results):
     with open(path, "r", encoding="utf-8") as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
+        video_urls = {}
         for row in csv_reader:
-            if line_count == 0:
+            if line_count < 1:
                 line_count += 1
             else:
-                print(line_count, row[8])
-                video_id = dom_parser(URL=row[8])
-                if video_id is not None:
-                    video_download_url = "http://players.brightcove.net/2379864788001/B1eFuwPXkG_default/index.html?videoId=%s" % video_id
+                print(line_count, row[9])
+                if not row[9] in video_urls:
+                    video_id = dom_parser(URL=row[9])
+                    if video_id is not None:
+                        video_download_url = "http://players.brightcove.net/2379864788001/B1eFuwPXkG_default/index.html?videoId=%s" % video_id
+                        row.append(video_download_url)
+                        print(row)
+                        write_csv(lines=[row], filename=filename)
+                    video_urls[row[9]] = video_download_url
+                else:
+                    video_download_url = video_urls[row[9]]
                     row.append(video_download_url)
                     print(row)
                     write_csv(lines=[row], filename=filename)
-                    results.append(row)
                 line_count += 1
-    return results
 
+    return
+
+print("--------------------Start--------------------------")
 results = [['YEAR', 'MAKE', 'MODEL', 'SECTION', 'SUB_SECTION', 'TITLE', 'DESCRIPTION', 'THUMBNAIL_URL', 'VIDEO_URL', 'VIDEO_DOWNLOAD_URL']]
-file_path = 'test/Ford_how_to_video_Sorted.csv'
-filename = "Ford_how_to_video_download_again.csv"
-video_urls = video_from_file(path=file_path, filename=filename, results=results)
-print(video_urls)
-
-# def downloadVIDEO(url_link):
-#     import urllib.request
-#     import MediaInfo
-#     urllib.request.urlretrieve(url_link, 'video_name')
-#     fileInfo = MediaInfo.parse('video_name')
-#     for track in fileInfo.tracks:
-#         if track.track_type == "Video":
-#             print("ok")
-#
-# url_link = "http://players.brightcove.net/2379864788001/B1eFuwPXkG_default/index.html?videoId=3569058990001"
-# downloadVIDEO(url_link=url_link)
-
+file_path = 'output/Ford_how_to_video_Sorted.csv'
+filename = "Ford_how_to_video_download.csv"
+video_from_file(path=file_path, filename=filename, results=results)
+print("--------------------The End--------------------------")
